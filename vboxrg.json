@@ -1,0 +1,27 @@
+{
+  "name": "testGroup1",
+  "vdus": [
+    {
+      "name": "testVM",
+      "imageName": "https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64.ova",
+      "netName": "vboxnet0",
+      "poPName": "docker-local",
+      "metadata": [
+        {
+          "key": "ENVIRONMENT_VARIABLE",
+          "value": "ENV1=test1"
+        },
+        {
+          "key": "ENVIRONMENT_VARIABLE",
+          "value": "ENV2=test2"
+        }
+      ]
+    }
+  ],
+  "networks": [
+    {
+      "name":"testNetwork1234",
+      "poPName":"docker-local"
+    }
+  ]
+}
