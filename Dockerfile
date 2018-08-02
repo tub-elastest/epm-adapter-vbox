@@ -29,4 +29,4 @@ WORKDIR virtualbox-adapter
 ENTRYPOINT ["python"]
 #ENTRYPOINT ["/bin/bash"]
 
-CMD ["run.py", "--register-adapter", "localhost", "localhost"]
+CMD ["run.py", "--register-adapter"]

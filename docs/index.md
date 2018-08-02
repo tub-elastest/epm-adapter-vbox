@@ -1,5 +1,9 @@
 # Elastest Platform Manager Virtualbox adapter
 
+## Important
+
+Before using the adapter even in a seperate docker container you need to install [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+
 ## Supported VM types
 Currently the virtualbox adapter supports only importing appliances in **.ova** of **.ovf** format. 
 It is designed for creating Virtual Machines with cloud images.

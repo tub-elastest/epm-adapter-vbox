@@ -150,7 +150,7 @@ def create_from_appliance(appliance_path, iso_path, network_name, root_dir):
         sp = m.get_serial_port(0)
         sp.enabled = True
 
-        if network_name == "nat":
+        if network_name.lower() == "nat":
             network = m.get_network_adapter(0)
             network.attachment_type = virtualbox.library.NetworkAttachmentType.nat
             network.enabled = True
