@@ -13,29 +13,6 @@ from src.utils.utils import extract_resource_group, get_image, extract_iso, extr
 from src.grpc_connector.client_pb2 import ResourceGroupProto, Network, MetadataEntry, VDU, PoP
 
 
-def start_and_wait_vm(name):
-    vbox = virtualbox.VirtualBox()
-    session = virtualbox.Session()
-
-    machine = vbox.find_machine(name)
-    if machine is not None:
-        progress = machine.launch_vm_process(session, "headless", "")
-        while progress.percent < 100 or not progress.completed:
-            logging.debug(progress.percent)
-            sleep(1)
-
-        # Wait for machine to stop
-        while machine.state not in [virtualbox.library.MachineState.saved, virtualbox.library.MachineState.aborted,
-                                    virtualbox.library.MachineState.powered_off]:
-            sleep(5)
-            logging.debug("Machine still running")
-        while session.state != virtualbox.library.SessionState.unlocked:
-            sleep(2)
-            logging.debug("Waiting for machine to be unlocked")
-            logging.debug(session.state)
-        delete_vm(machine.name)
-
-
 def start_vm(name):
     vbox = virtualbox.VirtualBox()
     session = virtualbox.Session()
@@ -80,31 +57,6 @@ def delete_vm(name):
 
     machine.unregister(virtualbox.library.CleanupMode.detach_all_return_none)
     machine.delete_config(media=[])
-
-
-def list_vms():
-    vbox = virtualbox.VirtualBox()
-    return [vm.name for vm in vbox.machines]
-
-
-def get_file(machine):
-    vbox = virtualbox.VirtualBox()
-    machine = vbox.find_machine(machine)
-    session = machine.create_session()
-
-    # TODO: UPDATE
-    gs = session.console.guest.create_session("user", "pass")
-    gs.copy_from("from", "to")
-    gs.close()
-
-
-def execute_command(machine, command):
-    vbox = virtualbox.VirtualBox()
-    vm = vbox.find_machine(machine)
-    session = vm.create_session()
-    # TODO: UPDATE
-    gs = session.console.guest.create_session("user", "pass")
-    process, stdout, stderr = gs.execute(command)
 
 
 def get_ip(machine):
@@ -192,7 +144,6 @@ def import_appliance_from_package(tar, root_dir):
         net_name = vdu["netName"]
         net = Network(name=net_name, cidr="", poPName="vbox", networkId=net_name)
         networks.append(net)
-
 
         iso_path = extract_iso(package, vm_name=vm_name)
         machines, ports = create_from_appliance(appliance_path=local_image_path, iso_path=iso_path,
