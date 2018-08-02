@@ -43,7 +43,7 @@ def start_vm(name):
     if machine is not None:
         progress = machine.launch_vm_process(session, "headless", "")
         while progress.percent < 100 or not progress.completed:
-            logging.debug(progress.percent)
+            logging.debug(" Starting vm: " + str(progress.percent))
             sleep(1)
         logging.debug("Machine " + machine.name + " started")
 
@@ -125,16 +125,15 @@ def get_metadata(machine):
     return metadata
 
 
-def create_from_appliance(appliance_path, iso_path, network_name):
+def create_from_appliance(appliance_path, iso_path, network_name, root_dir):
     vbox = virtualbox.VirtualBox()
     appliance = vbox.create_appliance()
-    root_dir = os.path.dirname(sys.modules['__main__'].__file__)
     logging.debug(root_dir + "/" + appliance_path)
     appliance.read(root_dir + "/" + appliance_path)
 
     progress = appliance.import_machines()
     while progress.percent < 100 or not progress.completed:
-        logging.debug(progress.percent)
+        logging.debug("Importing appliance: " + str(progress.percent))
         sleep(1)
 
     ports = []
@@ -165,7 +164,7 @@ def create_from_appliance(appliance_path, iso_path, network_name):
     return appliance.machines, ports
 
 
-def import_appliance_from_package(tar):
+def import_appliance_from_package(tar, root_dir):
     pops = []
     networks = []
     vdus = []
@@ -195,7 +194,7 @@ def import_appliance_from_package(tar):
 
         iso_path = extract_iso(package, vm_name=vm_name)
         machines, ports = create_from_appliance(appliance_path=local_image_path, iso_path=iso_path,
-                                                network_name=net_name)
+                                                network_name=net_name, root_dir=root_dir)
         for machine, port in zip(machines, ports):
             start_vm(machine)
             ip = "localhost"

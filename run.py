@@ -3,6 +3,7 @@ import time
 import atexit
 import logging
 from logging import handlers
+import os
 
 import grpc
 import src.grpc_connector.client_pb2_grpc as client_pb2_grpc
@@ -16,10 +17,12 @@ from src.handlers import ssh_client
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
+root_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 class VirtualBoxHandlerService(client_pb2_grpc.OperationHandlerServicer):
     def Create(self, request, context):
-        rg = vbox_handler.import_appliance_from_package(request.file)
+        rg = vbox_handler.import_appliance_from_package(request.file, root_dir)
         return rg
 
     def Remove(self, request, context):
@@ -118,7 +121,7 @@ if __name__ == '__main__':
     ch.setFormatter(format)
     log.addHandler(ch)
 
-    fh = handlers.RotatingFileHandler("epm-adapter-ansible.log", maxBytes=(1048576 * 5), backupCount=7)
+    fh = handlers.RotatingFileHandler("epm-adapter-vbox.log", maxBytes=(1048576 * 5), backupCount=7)
     fh.setFormatter(format)
     log.addHandler(fh)
     logging.info("\n")

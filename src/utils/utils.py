@@ -3,6 +3,7 @@ import validators
 import urllib3
 import codecs
 import yaml
+import os
 
 from src.grpc_connector.client_pb2 import VDU
 
@@ -18,6 +19,8 @@ def extract_resource_group(tar):
 
 
 def extract_iso(tar, vm_name):
+    if not os.path.isdir("isos"):
+        os.mkdir("isos")
     path = ""
     for member in tar.getmembers():
         if ".iso" in member.name:
@@ -30,6 +33,9 @@ def extract_iso(tar, vm_name):
 
 def get_image(image_path, name):
     if validators.url(image_path):
+        if not os.path.isdir("images"):
+            os.mkdir("images")
+
         http = urllib3.PoolManager()
         r = http.request('GET', image_path, preload_content=False)
         download_path = "images/" + name + ".ova"
