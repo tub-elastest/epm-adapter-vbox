@@ -157,6 +157,8 @@ def create_from_appliance(appliance_path, iso_path, network_name, root_dir):
             port = random.randint(50060, 50100)
             network.nat_engine.add_redirect("ssh", virtualbox.library.NATProtocol.tcp, "", port, "", 22)
             ports.append(port)
+        else:
+            raise ValueError("Only NAT networking is supported at the moment!")
 
         m.save_settings()
         session.unlock_machine()

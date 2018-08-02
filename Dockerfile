@@ -1,6 +1,6 @@
 FROM python:3.5
 
-RUN apt-get update && apt-get install -y build-essential autoconf libtool unzip software-properties-common linux-headers-generic virtualbox-dkms
+RUN apt-get update && apt-get install -y build-essential autoconf libtool unzip software-properties-common
 
 RUN pip install grpcio grpcio-tools pyyaml
 
@@ -29,4 +29,4 @@ WORKDIR virtualbox-adapter
 ENTRYPOINT ["python"]
 #ENTRYPOINT ["/bin/bash"]
 
-CMD ["run.py", "--register-adapter", "10.147.65.145", "10.147.65.145"]
+CMD ["run.py", "--register-adapter", "localhost", "localhost"]
