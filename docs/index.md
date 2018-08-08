@@ -51,6 +51,14 @@ This is an example of the Resource Group:
         {
           "key": "password",
           "value": "passw0rd"
+        },
+        {
+          "key": "ram",
+          "value": "2000"
+        },
+        {
+          "key": "cpu",
+          "value": "2"
         }
       ]
     }
@@ -73,6 +81,10 @@ the adapter knows it should import it.
 
 In the metadata options you should specify the credentials needed for ssh-ing into the machine after it is created.
 This is done to enable the runtime operations.
+
+In the metadata you can also specify technical requirements - RAM - the amount of RAM that should be allocated to the machine,
+CPU - the number or Virtual CPUs assigned to the machine. If these values are not defined the machine will be created using the 
+default values specified in the applicance.
 
 ### ISO
 

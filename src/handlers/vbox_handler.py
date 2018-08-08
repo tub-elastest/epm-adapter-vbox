@@ -77,7 +77,7 @@ def get_metadata(machine):
     return metadata
 
 
-def create_from_appliance(appliance_path, iso_path, network_name, root_dir):
+def create_from_appliance(appliance_path, iso_path, network_name, root_dir, tech_data):
     vbox = virtualbox.VirtualBox()
     appliance = vbox.create_appliance()
     logging.debug(root_dir + "/" + appliance_path)
@@ -92,7 +92,10 @@ def create_from_appliance(appliance_path, iso_path, network_name, root_dir):
     for machine in appliance.machines:
         session = vbox.find_machine(machine).create_session()
         m = session.machine
-        m.memory_size = 5000
+        if tech_data[0] is not None:
+            m.memory_size = tech_data[0]
+        if tech_data[1] is not None:
+            m.cpu_count = tech_data[1]
         medium = vbox.open_medium(location=root_dir + "/" + iso_path,
                                   device_type=virtualbox.library.DeviceType.dvd,
                                   access_mode=virtualbox.library.AccessMode.read_write, force_new_uuid=True)
@@ -146,8 +149,9 @@ def import_appliance_from_package(tar, root_dir):
         networks.append(net)
 
         iso_path = extract_iso(package, vm_name=vm_name)
+        tech_data = extract_technical_details(vdu["metadata"])
         machines, ports = create_from_appliance(appliance_path=local_image_path, iso_path=iso_path,
-                                                network_name=net_name, root_dir=root_dir)
+                                                network_name=net_name, root_dir=root_dir, tech_data=tech_data)
         for machine, port in zip(machines, ports):
             start_vm(machine)
             ip = "localhost"
@@ -188,3 +192,16 @@ def extract_auth_credentials(name, metadata):
 
     db[name + "_credentials"] = auth
     db.close()
+
+def extract_technical_details(metadata):
+    ram = None
+    cpu = None
+    logging.debug(metadata)
+    for kvp in metadata:
+        if kvp["key"].lower() == "cpu":
+            cpu = int(kvp["value"])
+        if kvp["key"].lower() == "ram":
+            ram = int(kvp["value"])
+    logging.debug("Found tech data: ", [ram, cpu])
+    return ram, cpu
+
