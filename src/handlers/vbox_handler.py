@@ -137,6 +137,10 @@ def import_appliance_from_package(tar, root_dir):
     else:
         rg_name = str(random.randint(100, 999))
 
+    key = None
+    if "key" in package.getnames():
+        key = package.extractfile("key")
+
     rg = extract_resource_group(package)
     overall_machines = []
     for vdu in rg["vdus"]:
@@ -161,6 +165,8 @@ def import_appliance_from_package(tar, root_dir):
             vdu = VDU(name=machine, imageName=net_name, netName=net_name, computeId=machine, ip=ip,
                       metadata=metadata)
             vdus.append(vdu)
+            if key is not None:
+                _save_to_db(machine + "_key", key.read())
         overall_machines.extend(machines)
     _save_to_db(rg_name, overall_machines)
     return ResourceGroupProto(name=rg_name, pops=pops, networks=networks, vdus=vdus)
